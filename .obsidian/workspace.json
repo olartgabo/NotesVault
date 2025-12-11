@@ -11,12 +11,14 @@
             "id": "d4f708bdf7bdbb3a",
             "type": "leaf",
             "state": {
-              "type": "release-notes",
+              "type": "markdown",
               "state": {
-                "currentVersion": "1.10.6"
+                "file": "uni/NewNote.md",
+                "mode": "source",
+                "source": false
               },
-              "icon": "lucide-book-up",
-              "title": "Release Notes 1.10.6"
+              "icon": "lucide-file",
+              "title": "NewNote"
             }
           }
         ]
@@ -165,6 +167,7 @@
   },
   "left-ribbon": {
     "hiddenItems": {
+      "obsidian-git:Open Git source control": false,
       "bases:Create new base": false,
       "switcher:Open quick switcher": false,
       "graph:Open graph view": false,
@@ -177,5 +180,9 @@
     }
   },
   "active": "d4f708bdf7bdbb3a",
-  "lastOpenFiles": []
+  "lastOpenFiles": [
+    "ideas/something.md",
+    "uni/NewNote.md",
+    "uni/NewNOte"
+  ]
 }
