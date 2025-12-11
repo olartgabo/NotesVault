@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "uni/Notes/NotasValentaina.md",
+                "file": "uni/proba/pruebaHipo.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "NotasValentaina"
+              "title": "pruebaHipo"
             }
           }
         ]
@@ -157,13 +157,23 @@
               "icon": "lucide-ghost",
               "title": "calendar"
             }
+          },
+          {
+            "id": "d60117c35f9f1695",
+            "type": "leaf",
+            "state": {
+              "type": "advanced-tables-toolbar",
+              "state": {},
+              "icon": "spreadsheet",
+              "title": "Advanced Tables"
+            }
           }
-        ]
+        ],
+        "currentTab": 5
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -181,9 +191,13 @@
   },
   "active": "c6bcb89b7683692b",
   "lastOpenFiles": [
+    "uni/proba/pruebaHipo.md~",
+    "uni/progra3/jetpack.md",
+    "uni/proba/pruebaHipo.md",
+    "uni/proba",
+    "uni/Notes/NotasValentaina.md",
     "uni/Notes/touch.md~",
     "uni/Notes/touch.md",
-    "uni/Notes/NotasValentaina.md",
     "Untitled.base",
     "uni/NewNote.md",
     "uni/Notes/NotasValentaina",
