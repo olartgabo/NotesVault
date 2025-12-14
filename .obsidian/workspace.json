@@ -140,12 +140,13 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "uni/proba/pruebaHipo.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline"
+              "title": "Outline of pruebaHipo"
             }
           },
           {
@@ -169,11 +170,12 @@
             }
           }
         ],
-        "currentTab": 5
+        "currentTab": 3
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -191,9 +193,12 @@
   },
   "active": "c6bcb89b7683692b",
   "lastOpenFiles": [
+    "uni/proba/analisisVar.md",
+    "Pasted image 20251212153058.png",
+    "Pasted image 20251212153012.png",
+    "uni/proba/pruebaHipo.md",
     "uni/proba/pruebaHipo.md~",
     "uni/progra3/jetpack.md",
-    "uni/proba/pruebaHipo.md",
     "uni/proba",
     "uni/Notes/NotasValentaina.md",
     "uni/Notes/touch.md~",
