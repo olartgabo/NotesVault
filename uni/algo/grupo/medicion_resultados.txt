@@ -1,0 +1,13 @@
+
+5. Medición experimental — Selection Sort
+------------------------------------------------------------------------
+| n     | Entrada    | Versión    |      Tiempo | Comparaciones | Interc./Mov | Llam.rec. |
+------------------------------------------------------------------------
+| 10    | Aleatoria  | Iterativa  |   0.0108 ms |           45 |          7 |       N/A |
+| 10    | Aleatoria  | Recursiva  |   0.0165 ms |           45 |          7 |        10 |
+| 100   | Ordenada   | Iterativa  |   0.2550 ms |         4950 |          0 |       N/A |
+| 100   | Ordenada   | Recursiva  |   0.2649 ms |         4950 |          0 |       100 |
+| 500   | Aleatoria  | Iterativa  |   4.7801 ms |       124750 |        492 |       N/A |
+| 500   | Aleatoria  | Recursiva  |   7.0045 ms |       124750 |        492 |       500 |
+------------------------------------------------------------------------
+  (cada valor es el promedio de 5 ejecuciones)

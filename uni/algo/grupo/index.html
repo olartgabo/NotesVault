@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Selection Sort — Visualizador</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --border: #2a2d3a;
+    --accent-iter: #4f8ef7;
+    --accent-rec: #a855f7;
+    --bar-default: #3a4060;
+    --bar-compare: #f59e0b;
+    --bar-min: #ef4444;
+    --bar-sorted: #22c55e;
+    --bar-swap: #06b6d4;
+    --text: #e2e8f0;
+    --text-dim: #64748b;
+    --green: #22c55e;
+    --yellow: #f59e0b;
+    --red: #ef4444;
+    --cyan: #06b6d4;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  header h1 { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; }
+  header h1 span { color: var(--accent-iter); }
+  .badge {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 99px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  .badge-iter { background: #1e3a6e; color: var(--accent-iter); }
+  .badge-rec  { background: #3b1e6e; color: var(--accent-rec); }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+    padding: 12px 24px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .tab {
+    padding: 8px 20px;
+    border-radius: 6px 6px 0 0;
+    border: 1px solid transparent;
+    border-bottom: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    background: transparent;
+    color: var(--text-dim);
+    transition: all 0.15s;
+    position: relative;
+    top: 1px;
+  }
+  .tab.active-iter {
+    background: var(--surface);
+    border-color: var(--border);
+    color: var(--accent-iter);
+    border-bottom-color: var(--surface);
+  }
+  .tab.active-rec {
+    background: var(--surface);
+    border-color: var(--border);
+    color: var(--accent-rec);
+    border-bottom-color: var(--surface);
+  }
+  .tab:hover { color: var(--text); }
+
+  .panel { display: none; flex: 1; flex-direction: column; }
+  .panel.visible { display: flex; }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+  }
+  .ctrl-group { display: flex; align-items: center; gap: 6px; }
+  label { font-size: 0.78rem; color: var(--text-dim); }
+  select, input[type=range] { accent-color: var(--accent-iter); }
+  select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+  }
+  input[type=range] { width: 90px; }
+  .val-label { font-size: 0.78rem; color: var(--text); min-width: 28px; }
+
+  .btn {
+    padding: 6px 16px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-primary-iter { background: var(--accent-iter); color: #fff; }
+  .btn-primary-rec  { background: var(--accent-rec);  color: #fff; }
+  .btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+  .btn-stop { background: #7f1d1d; color: #fca5a5; }
+
+  .stats-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 10px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 80px;
+  }
+  .stat-val {
+    font-size: 1.4rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .stat-lbl { font-size: 0.68rem; color: var(--text-dim); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .stat-val.c { color: var(--yellow); }
+  .stat-val.s { color: var(--cyan); }
+  .stat-val.r { color: var(--accent-rec); }
+  .stat-val.t { color: var(--green); }
+
+  .viz-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 16px 24px;
+    gap: 12px;
+    min-height: 0;
+  }
+  .bars-container {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    min-height: 200px;
+    max-height: 320px;
+    position: relative;
+  }
+  .bar-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+    position: relative;
+  }
+  .bar {
+    width: 100%;
+    border-radius: 3px 3px 0 0;
+    transition: height 0.12s ease, background 0.1s;
+    background: var(--bar-default);
+    min-height: 4px;
+  }
+  .bar.compare { background: var(--bar-compare); }
+  .bar.minimum  { background: var(--bar-min); }
+  .bar.sorted   { background: var(--bar-sorted); }
+  .bar.swapping { background: var(--bar-swap); }
+
+  .bar-val {
+    font-size: 0.55rem;
+    color: var(--text-dim);
+    margin-top: 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .bar-idx {
+    font-size: 0.5rem;
+    color: #374151;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+  }
+  .leg { display: flex; align-items: center; gap: 5px; }
+  .leg-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+  .code-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-family: 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 0.75rem;
+    line-height: 1.7;
+    overflow-x: auto;
+    flex-shrink: 0;
+  }
+  .code-box .hl { background: rgba(245,158,11,0.2); border-radius: 3px; padding: 0 2px; }
+  .kw { color: #93c5fd; }
+  .fn { color: #86efac; }
+  .cm { color: #475569; }
+  .nm { color: #fcd34d; }
+
+  .info-msg {
+    text-align: center;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    padding: 6px;
+    min-height: 24px;
+  }
+  .info-msg span { color: var(--text); font-weight: 600; }
+
+  /* two-column on wider screens */
+  @media (min-width: 900px) {
+    .viz-area { flex-direction: row; }
+    .bars-side { flex: 1.4; display: flex; flex-direction: column; gap: 10px; }
+    .code-side  { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+    .bars-container { max-height: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Selection <span>Sort</span> — Visualizador</h1>
+  <span class="badge badge-iter">ITERATIVO</span>
+  <span class="badge badge-rec">RECURSIVO</span>
+  <span style="font-size:0.75rem;color:var(--text-dim);margin-left:auto">Algorítmica I · 2026</span>
+</header>
+
+<div class="tabs">
+  <button class="tab active-iter" onclick="switchTab('iter')">Iterativo</button>
+  <button class="tab" onclick="switchTab('rec')">Recursivo</button>
+</div>
+
+<!-- ==================== ITERATIVO ==================== -->
+<div class="panel visible" id="panel-iter">
+  <div class="controls">
+    <div class="ctrl-group">
+      <label>Tamaño</label>
+      <input type="range" id="iter-size" min="5" max="40" value="16" oninput="iterSizeLabel.textContent=this.value; if(!iterRunning) iterGenerate()">
+      <span class="val-label" id="iterSizeLabel">16</span>
+    </div>
+    <div class="ctrl-group">
+      <label>Entrada</label>
+      <select id="iter-input">
+        <option value="random">Aleatoria</option>
+        <option value="sorted">Ordenada</option>
+        <option value="reverse">Invertida</option>
+        <option value="nearly">Casi ordenada</option>
+      </select>
+    </div>
+    <div class="ctrl-group">
+      <label>Velocidad</label>
+      <input type="range" id="iter-speed" min="1" max="10" value="5" oninput="iterSpeedLabel.textContent=this.value">
+      <span class="val-label" id="iterSpeedLabel">5</span>
+    </div>
+    <button class="btn btn-secondary" id="iter-gen" onclick="iterGenerate()">Nuevo arreglo</button>
+    <button class="btn btn-primary-iter" id="iter-start" onclick="iterStart()">▶ Iniciar</button>
+    <button class="btn btn-stop" id="iter-stop" onclick="iterStop()" disabled>■ Detener</button>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat"><span class="stat-val c" id="iter-cmp">0</span><span class="stat-lbl">Comparaciones</span></div>
+    <div class="stat"><span class="stat-val s" id="iter-swp">0</span><span class="stat-lbl">Intercambios</span></div>
+    <div class="stat"><span class="stat-val t" id="iter-time">0 ms</span><span class="stat-lbl">Tiempo</span></div>
+    <div class="stat"><span class="stat-val" id="iter-pass" style="color:#e2e8f0">0 / 0</span><span class="stat-lbl">Pasada</span></div>
+  </div>
+
+  <div class="viz-area">
+    <div class="bars-side">
+      <div class="bars-container" id="iter-bars"></div>
+      <div class="info-msg" id="iter-msg">Presiona "Iniciar" para comenzar la visualización.</div>
+      <div class="legend">
+        <div class="leg"><div class="leg-dot" style="background:var(--bar-default)"></div> Sin procesar</div>
+        <div class="leg"><div class="leg-dot" style="background:var(--bar-compare)"></div> Comparando</div>
+        <div class="leg"><div class="leg-dot" style="background:var(--bar-min)"></div> Mínimo actual</div>
+        <div class="leg"><div class="leg-dot" style="background:var(--bar-swap)"></div> Intercambiando</div>
+        <div class="leg"><div class="leg-dot" style="background:var(--bar-sorted)"></div> Ordenado</div>
+      </div>
+    </div>
+    <div class="code-side">
+      <div class="code-box" id="iter-code">
+<span class="kw">function</span> <span class="fn">selectionSortIterativo</span>(arr):
+  <span id="ic0"><span class="kw">for</span> i <span class="kw">from</span> <span class="nm">0</span> <span class="kw">to</span> n-<span class="nm">1</span>:</span>
+    <span id="ic1">  minIdx = i</span>
+    <span id="ic2">  <span class="kw">for</span> j <span class="kw">from</span> i+<span class="nm">1</span> <span class="kw">to</span> n-<span class="nm">1</span>:</span>
+      <span id="ic3">    <span class="kw">if</span> arr[j] &lt; arr[minIdx]:</span>
+        <span id="ic4">      minIdx = j   <span class="cm">// nuevo mínimo</span></span>
+    <span id="ic5">  <span class="kw">if</span> minIdx ≠ i:</span>
+      <span id="ic6">    swap(arr[i], arr[minIdx])</span>
+
+<span class="cm">// Complejidad: O(n²) siempre</span>
+<span class="cm">// Mejor caso: O(n²)  Peor caso: O(n²)</span>
+<span class="cm">// Intercambios: O(n)</span>
+      </div>
+      <div style="padding:8px 0; font-size:0.78rem; color:var(--text-dim); line-height:1.7;">
+        <b style="color:var(--text)">Invariante:</b> al terminar la pasada <i>i</i>, los primeros <i>i+1</i> elementos están ordenados definitivamente.<br>
+        <b style="color:var(--text)">Comparaciones:</b> n(n-1)/2 — siempre igual.<br>
+        <b style="color:var(--text)">Ventaja:</b> mínimo de intercambios (a lo sumo n−1).
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== RECURSIVO ==================== -->
+<div class="panel" id="panel-rec">
+  <div class="controls">
+    <div class="ctrl-group">
+      <label>Tamaño</label>
+      <input type="range" id="rec-size" min="5" max="40" value="16" oninput="recSizeLabel.textContent=this.value; if(!recRunning) recGenerate()">
+      <span class="val-label" id="recSizeLabel">16</span>
+    </div>
+    <div class="ctrl-group">
+      <label>Entrada</label>
+      <select id="rec-input">
+        <option value="random">Aleatoria</option>
+        <option value="sorted">Ordenada</option>
+        <option value="reverse">Invertida</option>
+        <option value="nearly">Casi ordenada</option>
+      </select>
+    </div>
+    <div class="ctrl-group">
+      <label>Velocidad</label>
+      <input type="range" id="rec-speed" min="1" max="10" value="5" oninput="recSpeedLabel.textContent=this.value">
+      <span class="val-label" id="recSpeedLabel">5</span>
+    </div>
+    <button class="btn btn-secondary" id="rec-gen" onclick="recGenerate()">Nuevo arreglo</button>
+    <button class="btn btn-primary-rec" id="rec-start" onclick="recStart()">▶ Iniciar</button>
+    <button class="btn btn-stop" id="rec-stop" onclick="recStop()" disabled>■ Detener</button>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat"><span class="stat-val c" id="rec-cmp">0</span><span class="stat-lbl">Comparaciones</span></div>
+    <div class="stat"><span class="stat-val s" id="rec-swp">0</span><span class="stat-lbl">Intercambios</span></div>
+    <div class="stat"><span class="stat-val r" id="rec-calls">0</span><span class="stat-lbl">Llam. recursivas</span></div>
+    <div class="stat"><span class="stat-val t" id="rec-time">0 ms</span><span class="stat-lbl">Tiempo</span></div>
+  </div>
+
+  <div class="viz-area">
+    <div class="bars-side">
+      <div class="bars-container" id="rec-bars"></div>
+      <div class="info-msg" id="rec-msg">Presiona "Iniciar" para comenzar la visualización.</div>
+      <div class="legend">
+        <div class="leg"><div class="leg-dot" style="background:var(--bar-default)"></div> Sin procesar</div>
+        <div class="leg"><div class="leg-dot" style="background:var(--bar-compare)"></div> Comparando</div>
+        <div class="leg"><div class="leg-dot" style="background:var(--bar-min)"></div> Mínimo actual</div>
+        <div class="leg"><div class="leg-dot" style="background:var(--bar-swap)"></div> Intercambiando</div>
+        <div class="leg"><div class="leg-dot" style="background:var(--bar-sorted)"></div> Ordenado</div>
+      </div>
+    </div>
+    <div class="code-side">
+      <div class="code-box" id="rec-code">
+<span class="kw">function</span> <span class="fn">selectionSortRecursivo</span>(arr, start):
+  <span id="rc0">  <span class="cm">// caso base</span></span>
+  <span id="rc1">  <span class="kw">if</span> start >= n-<span class="nm">1</span>: <span class="kw">return</span></span>
+
+  <span id="rc2">  minIdx = start</span>
+  <span id="rc3">  <span class="kw">for</span> j <span class="kw">from</span> start+<span class="nm">1</span> <span class="kw">to</span> n-<span class="nm">1</span>:</span>
+    <span id="rc4">    <span class="kw">if</span> arr[j] &lt; arr[minIdx]:</span>
+      <span id="rc5">      minIdx = j</span>
+  <span id="rc6">  <span class="kw">if</span> minIdx ≠ start:</span>
+    <span id="rc7">    swap(arr[start], arr[minIdx])</span>
+
+  <span id="rc8">  <span class="cm">// llamada recursiva</span></span>
+  <span id="rc9">  selectionSortRecursivo(arr, start+<span class="nm">1</span>)</span>
+
+<span class="cm">// T(n) = T(n-1) + O(n)</span>
+<span class="cm">// Recurrencia → O(n²)</span>
+      </div>
+      <div style="padding:8px 0; font-size:0.78rem; color:var(--text-dim); line-height:1.7;">
+        <b style="color:var(--text)">Caso base:</b> start ≥ n−1 (arreglo de 1 elemento).<br>
+        <b style="color:var(--text)">Llamada recursiva:</b> start+1 (reduce subproblema en 1).<br>
+        <b style="color:var(--text)">Profundidad de pila:</b> n − igual a la cantidad de pasadas.<br>
+        <b style="color:var(--accent-rec)">Nota:</b> misma complejidad que iterativo, pero usa O(n) de pila.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── utilities ────────────────────────────────────────────────────────────────
+function makeArray(n, type) {
+  let a = Array.from({length: n}, (_, i) => i + 1);
+  if (type === 'random') {
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+  } else if (type === 'reverse') {
+    a.reverse();
+  } else if (type === 'nearly') {
+    for (let i = 0; i < Math.max(1, Math.floor(n * 0.15)); i++) {
+      const x = Math.floor(Math.random() * n);
+      const y = Math.floor(Math.random() * n);
+      [a[x], a[y]] = [a[y], a[x]];
+    }
+  }
+  return a;
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function speedToMs(v) {
+  // v: 1(slow)..10(fast)  →  ms: 800..20
+  return Math.round(800 / Math.pow(v, 1.4));
+}
+
+// ─── render bars ──────────────────────────────────────────────────────────────
+function renderBars(containerId, arr, states) {
+  const c = document.getElementById(containerId);
+  const n = arr.length;
+  const max = Math.max(...arr);
+  const showVals = n <= 25;
+
+  // reuse DOM elements for perf
+  while (c.children.length > n) c.removeChild(c.lastChild);
+  while (c.children.length < n) {
+    const w = document.createElement('div');
+    w.className = 'bar-wrap';
+    const b = document.createElement('div');
+    b.className = 'bar';
+    const v = document.createElement('div');
+    v.className = 'bar-val';
+    w.appendChild(b); w.appendChild(v);
+    c.appendChild(w);
+  }
+
+  for (let i = 0; i < n; i++) {
+    const w = c.children[i];
+    const b = w.children[0];
+    const v = w.children[1];
+    const pct = (arr[i] / max) * 100;
+    b.style.height = `${pct}%`;
+    b.className = 'bar ' + (states[i] || '');
+    v.textContent = showVals ? arr[i] : '';
+  }
+}
+
+// ─── tab switch ───────────────────────────────────────────────────────────────
+function switchTab(t) {
+  document.getElementById('panel-iter').classList.toggle('visible', t === 'iter');
+  document.getElementById('panel-rec').classList.toggle('visible', t === 'rec');
+  const tabs = document.querySelectorAll('.tab');
+  tabs[0].className = 'tab' + (t === 'iter' ? ' active-iter' : '');
+  tabs[1].className = 'tab' + (t === 'rec'  ? ' active-rec'  : '');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  ITERATIVO
+// ═══════════════════════════════════════════════════════════════════════════════
+let iterArr = [];
+let iterRunning = false;
+let iterStopFlag = false;
+
+function iterGenerate() {
+  if (iterRunning) return;
+  const n = +document.getElementById('iter-size').value;
+  const t = document.getElementById('iter-input').value;
+  iterArr = makeArray(n, t);
+  const states = new Array(n).fill('');
+  renderBars('iter-bars', iterArr, states);
+  document.getElementById('iter-cmp').textContent = '0';
+  document.getElementById('iter-swp').textContent = '0';
+  document.getElementById('iter-time').textContent = '0 ms';
+  document.getElementById('iter-pass').textContent = `0 / ${n-1}`;
+  document.getElementById('iter-msg').textContent = 'Arreglo generado. Presiona "Iniciar".';
+}
+
+async function iterStart() {
+  if (iterRunning) return;
+  if (!iterArr.length) iterGenerate();
+  iterRunning = true;
+  iterStopFlag = false;
+  document.getElementById('iter-start').disabled = true;
+  document.getElementById('iter-stop').disabled = false;
+  document.getElementById('iter-gen').disabled = true;
+
+  const arr = [...iterArr];
+  const n = arr.length;
+  let cmp = 0, swp = 0;
+  const states = new Array(n).fill('');
+  const t0 = performance.now();
+
+  for (let i = 0; i < n - 1 && !iterStopFlag; i++) {
+    let minIdx = i;
+    states.fill('', 0, n);
+    for (let k = 0; k < i; k++) states[k] = 'sorted';
+    states[minIdx] = 'minimum';
+    document.getElementById('iter-pass').textContent = `${i+1} / ${n-1}`;
+
+    for (let j = i + 1; j < n && !iterStopFlag; j++) {
+      states[j] = 'compare';
+      renderBars('iter-bars', arr, states);
+      document.getElementById('iter-msg').innerHTML =
+        `Pasada ${i+1}: comparando arr[<b>${j}</b>]=${arr[j]} con mínimo arr[<b>${minIdx}</b>]=${arr[minIdx]}`;
+      await delay(speedToMs(+document.getElementById('iter-speed').value));
+
+      cmp++;
+      document.getElementById('iter-cmp').textContent = cmp;
+
+      if (arr[j] < arr[minIdx]) {
+        states[minIdx] = '';
+        minIdx = j;
+        states[minIdx] = 'minimum';
+        document.getElementById('iter-msg').innerHTML =
+          `Nuevo mínimo encontrado: arr[<b>${minIdx}</b>] = ${arr[minIdx]}`;
+        renderBars('iter-bars', arr, states);
+        await delay(speedToMs(+document.getElementById('iter-speed').value) * 0.5);
+      } else {
+        states[j] = '';
+      }
+    }
+
+    if (!iterStopFlag && minIdx !== i) {
+      states[i] = 'swapping';
+      states[minIdx] = 'swapping';
+      renderBars('iter-bars', arr, states);
+      document.getElementById('iter-msg').innerHTML =
+        `Intercambiando arr[<b>${i}</b>]=${arr[i]} ↔ arr[<b>${minIdx}</b>]=${arr[minIdx]}`;
+      await delay(speedToMs(+document.getElementById('iter-speed').value) * 1.5);
+      [arr[i], arr[minIdx]] = [arr[minIdx], arr[i]];
+      swp++;
+      document.getElementById('iter-swp').textContent = swp;
+    }
+
+    states[i] = 'sorted';
+    renderBars('iter-bars', arr, states);
+    document.getElementById('iter-time').textContent = `${(performance.now() - t0).toFixed(1)} ms`;
+  }
+
+  if (!iterStopFlag) {
+    for (let k = 0; k < n; k++) states[k] = 'sorted';
+    renderBars('iter-bars', arr, states);
+    const elapsed = (performance.now() - t0).toFixed(1);
+    document.getElementById('iter-time').textContent = `${elapsed} ms`;
+    document.getElementById('iter-msg').innerHTML =
+      `✓ Ordenado en <b>${elapsed} ms</b> — ${cmp} comparaciones, ${swp} intercambios`;
+  }
+
+  iterRunning = false;
+  document.getElementById('iter-start').disabled = false;
+  document.getElementById('iter-stop').disabled = true;
+  document.getElementById('iter-gen').disabled = false;
+}
+
+function iterStop() {
+  iterStopFlag = true;
+  document.getElementById('iter-msg').textContent = 'Detenido.';
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  RECURSIVO
+// ═══════════════════════════════════════════════════════════════════════════════
+let recArr = [];
+let recRunning = false;
+let recStopFlag = false;
+
+function recGenerate() {
+  if (recRunning) return;
+  const n = +document.getElementById('rec-size').value;
+  const t = document.getElementById('rec-input').value;
+  recArr = makeArray(n, t);
+  const states = new Array(n).fill('');
+  renderBars('rec-bars', recArr, states);
+  document.getElementById('rec-cmp').textContent = '0';
+  document.getElementById('rec-swp').textContent = '0';
+  document.getElementById('rec-calls').textContent = '0';
+  document.getElementById('rec-time').textContent = '0 ms';
+  document.getElementById('rec-msg').textContent = 'Arreglo generado. Presiona "Iniciar".';
+}
+
+async function recStart() {
+  if (recRunning) return;
+  if (!recArr.length) recGenerate();
+  recRunning = true;
+  recStopFlag = false;
+  document.getElementById('rec-start').disabled = true;
+  document.getElementById('rec-stop').disabled = false;
+  document.getElementById('rec-gen').disabled = true;
+
+  const arr = [...recArr];
+  const n = arr.length;
+  let cmp = 0, swp = 0, calls = 0;
+  const states = new Array(n).fill('');
+  const t0 = performance.now();
+
+  async function recSort(start) {
+    if (recStopFlag || start >= n - 1) return;
+
+    calls++;
+    document.getElementById('rec-calls').textContent = calls;
+    document.getElementById('rec-msg').innerHTML =
+      `<b>selectionSort(arr, ${start})</b> — profundidad de pila: ${calls}`;
+
+    let minIdx = start;
+    states.fill('', 0, n);
+    for (let k = 0; k < start; k++) states[k] = 'sorted';
+    states[minIdx] = 'minimum';
+
+    for (let j = start + 1; j < n && !recStopFlag; j++) {
+      states[j] = 'compare';
+      renderBars('rec-bars', arr, states);
+      await delay(speedToMs(+document.getElementById('rec-speed').value));
+
+      cmp++;
+      document.getElementById('rec-cmp').textContent = cmp;
+
+      if (arr[j] < arr[minIdx]) {
+        states[minIdx] = '';
+        minIdx = j;
+        states[minIdx] = 'minimum';
+        renderBars('rec-bars', arr, states);
+        await delay(speedToMs(+document.getElementById('rec-speed').value) * 0.4);
+      } else {
+        states[j] = '';
+      }
+    }
+
+    if (!recStopFlag && minIdx !== start) {
+      states[start] = 'swapping';
+      states[minIdx] = 'swapping';
+      renderBars('rec-bars', arr, states);
+      document.getElementById('rec-msg').innerHTML =
+        `Intercambiando arr[<b>${start}</b>]=${arr[start]} ↔ arr[<b>${minIdx}</b>]=${arr[minIdx]}`;
+      await delay(speedToMs(+document.getElementById('rec-speed').value) * 1.5);
+      [arr[start], arr[minIdx]] = [arr[minIdx], arr[start]];
+      swp++;
+      document.getElementById('rec-swp').textContent = swp;
+    }
+
+    states[start] = 'sorted';
+    renderBars('rec-bars', arr, states);
+    document.getElementById('rec-time').textContent = `${(performance.now() - t0).toFixed(1)} ms`;
+
+    await recSort(start + 1);
+  }
+
+  await recSort(0);
+
+  if (!recStopFlag) {
+    for (let k = 0; k < n; k++) states[k] = 'sorted';
+    renderBars('rec-bars', arr, states);
+    const elapsed = (performance.now() - t0).toFixed(1);
+    document.getElementById('rec-time').textContent = `${elapsed} ms`;
+    document.getElementById('rec-msg').innerHTML =
+      `✓ Ordenado en <b>${elapsed} ms</b> — ${cmp} comparaciones, ${swp} intercambios, ${calls} llamadas recursivas`;
+  }
+
+  recRunning = false;
+  document.getElementById('rec-start').disabled = false;
+  document.getElementById('rec-stop').disabled = true;
+  document.getElementById('rec-gen').disabled = false;
+}
+
+function recStop() {
+  recStopFlag = true;
+  document.getElementById('rec-msg').textContent = 'Detenido.';
+}
+
+// ─── init ─────────────────────────────────────────────────────────────────────
+iterGenerate();
+recGenerate();
+</script>
+</body>
+</html>
